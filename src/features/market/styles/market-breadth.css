@@ -1,0 +1,11 @@
+.market-breadth { margin-top: 5px; }
+.breadth-bar { display: flex; gap: 3px; height: 6px; overflow: hidden; border-radius: 6px; background: var(--surface-subtle); }
+.breadth-bar > span { min-width: 3px; border-radius: 3px; }
+.breadth-rising { background: var(--green); }
+.breadth-falling { background: var(--red); }
+.breadth-unchanged { background: var(--muted); }
+.breadth-unavailable { background: var(--border); }
+.breadth-legend { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 5px 8px; margin-top: 9px; color: var(--muted); font-size: 11px; }
+.breadth-legend > span { display: inline-flex; align-items: center; gap: 5px; }
+.breadth-legend i { width: 5px; height: 5px; border-radius: 50%; }
+.breadth-other { display: block; margin-top: 5px; color: var(--muted); font-size: 10px; }

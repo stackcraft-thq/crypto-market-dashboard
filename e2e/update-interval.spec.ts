@@ -1,0 +1,46 @@
+import { expect, test } from '@playwright/test'
+import AxeBuilder from '@axe-core/playwright'
+import { testCoins } from '../src/test/fixtures/coins'
+
+test('auto-update replaces refresh with an interval selector and follows the chosen cadence', async ({ page }) => {
+  let requests = 0
+  await page.route('https://api.coingecko.com/**', (route) => { requests++; return route.fulfill({ json: testCoins }) })
+  await page.clock.install()
+  await page.goto('/')
+  await expect(page.getByRole('article')).toHaveCount(3)
+  const toggle = page.getByRole('switch', { name: 'Auto-update' })
+  await expect(page.getByRole('button', { name: 'Refresh prices' })).toBeVisible()
+  await expect(page.getByLabel('Update interval')).toHaveCount(0)
+  await toggle.click()
+  await expect(page.locator('.refresh-button')).toHaveCount(0)
+  await page.getByRole('combobox', { name: 'Update interval' }).click()
+  await page.getByRole('option', { name: 'Every 2 minutes', exact: true }).click()
+  await page.clock.fastForward(61_000)
+  expect(requests).toBe(1)
+  await page.clock.fastForward(61_000)
+  await expect.poll(() => requests).toBe(2)
+  await page.getByRole('combobox', { name: 'Update interval' }).click()
+  await page.getByRole('option', { name: 'Every 5 minutes', exact: true }).click()
+  await page.clock.fastForward(241_000)
+  expect(requests).toBe(2)
+  await page.clock.fastForward(61_000)
+  await expect.poll(() => requests).toBe(3)
+  await toggle.click()
+  await expect(page.getByRole('button', { name: 'Refresh prices' })).toBeVisible()
+  await expect(page.getByLabel('Update interval')).toHaveCount(0)
+  await toggle.click()
+  await expect(page.getByRole('combobox', { name: 'Update interval' })).toHaveText('Every 5 minutes')
+})
+
+test('interval controls fit on mobile and are accessible', async ({ page }, testInfo) => {
+  await page.route('https://api.coingecko.com/**', (route) => route.fulfill({ json: testCoins }))
+  await page.setViewportSize({ width: 390, height: 1000 })
+  await page.goto('/')
+  await expect(page.getByRole('article')).toHaveCount(3)
+  await page.getByRole('switch', { name: 'Auto-update' }).click()
+  await expect(page.getByLabel('Update interval')).toBeVisible()
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+  const scan = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze()
+  expect(scan.violations).toEqual([])
+  await page.screenshot({ path: testInfo.outputPath('interval-mobile.png') })
+})

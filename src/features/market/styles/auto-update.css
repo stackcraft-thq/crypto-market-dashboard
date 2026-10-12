@@ -1,0 +1,13 @@
+.market-actions { display: flex; align-items: center; gap: 18px; }
+.auto-update-control { display: flex; align-items: center; gap: 8px; }
+.auto-update-label { display: flex; flex-direction: column; gap: 3px; font-size: 11px; font-weight: 600; }
+.auto-update-label > span:last-child { color: var(--muted); font-size: 10px; font-weight: 400; }
+.auto-update-switch { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; }
+.auto-update-track { display: flex; align-items: center; width: 36px; height: 21px; padding: 3px; border-radius: 20px; background: var(--muted); transition: background .15s; }
+.auto-update-track > span { width: 15px; height: 15px; border-radius: 50%; background: #fff; transition: transform .15s; box-shadow: 0 1px 3px rgb(0 0 0 / 15%); }
+.auto-update-switch[aria-checked='true'] .auto-update-track { background: #635bce; }
+.auto-update-switch[aria-checked='true'] .auto-update-track > span { transform: translateX(15px); }
+@media (max-width: 639px) {
+  .market-section-heading { flex-wrap: wrap; row-gap: 14px; }
+  .market-actions { width: 100%; justify-content: space-between; gap: 12px; }
+}
